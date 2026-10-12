@@ -1,0 +1,14 @@
+# Gitleaks configuration (runs in ci.yml). Default rules stay on; only generated lockfiles are exempt,
+# because podspec/package checksums are high-entropy hex that the generic-api-key rule mistakes for keys.
+title = "lagnaa-mobile"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated lockfiles contain integrity hashes, not secrets"
+paths = [
+  '''ios/Podfile\.lock$''',
+  '''pnpm-lock\.yaml$''',
+  '''Gemfile\.lock$''',
+]
