@@ -7,9 +7,9 @@ Two release mechanisms with a hard boundary between them.
 Required when any of these change: native code or configuration (`android/`, `ios/`), native dependencies or their versions, React Native version, permissions, entitlements, capabilities (push, universal links), signing, app icon/splash, build flavors, the OTA public key, the Sentry native SDK, Firebase SDKs, minimum OS versions, or any change that alters the app's primary purpose or adds a feature category the store review has not seen.
 
 ```
-tag v<semver>  →  CI builds signed AAB (Android) and signed archive (iOS, when configured)
-             →  artifacts attached to the GitHub release
-             →  human uploads: Play Console internal → closed → production (staged); TestFlight → App Store
+version bump + tag v<semver>  →  manual signed AAB (Android) / Xcode archive (iOS)
+                          →  human uploads: Play Console internal → closed → production (staged); TestFlight → App Store
+(CI automation of this step was deliberately removed; see docs/CI_CD.md)
 ```
 
 Android and iOS are released independently; a platform-specific fix ships for that platform only. Store releases are the only way to change the Native Runtime fingerprint.

@@ -23,6 +23,7 @@ export default tseslint.config(
       '.scratch-template/**',
       '**/*.generated.ts',
       'assets/**',
+      'web/**',
     ],
   },
   ...rnBase,

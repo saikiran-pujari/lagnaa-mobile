@@ -30,7 +30,7 @@ See `AGENTS.md` (the same rules apply to humans).
 ## Releases
 
 - Version bump: `pnpm version <minor|patch>` runs `scripts/sync-version.ts` (updates `versionName`, `MARKETING_VERSION`) and increments `versionCode`/`CURRENT_PROJECT_VERSION`.
-- Store Release: tag `v<version>`; CI attaches signed artifacts; a release manager uploads to Play (internal → closed → production) and App Store Connect.
+- Store Release: tag `v<version>`; build the signed AAB / Xcode archive manually (docs/CI_CD.md) and upload to Play (internal → closed → production) and App Store Connect.
 - OTA Release (Phase 2): merges auto-publish to `development`; promote to `staging` and `production` through the OTA workflow with rollout percentage. Never promote to production on a Friday evening.
 
 ## Local setup

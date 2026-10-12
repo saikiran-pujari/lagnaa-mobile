@@ -13,21 +13,15 @@ checkout → pnpm install --frozen-lockfile → env:check → lint → typecheck
 
 Quality gates fail the job; nothing is advisory.
 
-## `android-release.yml` (tag `v*`)
+## Release builds: manual (decision 2026-10-12)
 
-Decode upload keystore from secrets → `gradlew bundleProdRelease` with `ANDROID_KEYSTORE_*` env → upload AAB + mapping file as release artifacts → upload source maps to Sentry (when DSN configured). Human uploads to Play Console.
+Store builds are produced by hand on a developer machine and uploaded manually:
 
-## `ios-release.yml` (tag `v*`, enabled once an Apple Developer team and App Store Connect record exist)
+- Android: `pnpm android:bundle:prod` with `ANDROID_KEYSTORE_*` env vars or a gitignored `android/credentials.json`; upload the AAB from `android/app/build/outputs/bundle/prodRelease/` in Play Console (internal → closed → production).
+- iOS: Xcode, scheme `Lagnaa`, Product → Archive, distribute to App Store Connect (requires an Apple Developer team; not set up yet).
+- OTA (Phase 2, optional): `hot-updater deploy --channel <channel>` from a release manager's machine.
 
-Import certificate + provisioning profile from secrets into a temporary keychain → `xcodebuild archive` + `exportArchive` (App Store method) → upload IPA artifact. Human uploads via Transporter or `altool`.
-
-## `ota-release.yml` (Phase 2; tag `ota/<channel>/<n>` or manual dispatch)
-
-Build JS bundle for both platforms → sign → `hot-updater deploy --channel` → post bundle id and fingerprint to the run summary. Production channel requires a manual approval environment and a rollout percentage input.
-
-## `nightly.yml`
-
-E2E (Maestro) against the development build on an iOS simulator and an Android API 34 emulator.
+The workflows that automated these (`android-release.yml`, `ios-release.yml`, `ota-release.yml`) were removed to keep the repo small; recreate them from `docs/RELEASE_ARCHITECTURE.md` if release automation becomes worth it. `ci.yml` stays: it is validation, not release.
 
 ## Caching
 
@@ -35,4 +29,4 @@ pnpm store, Gradle (`~/.gradle/caches`, wrapper), CocoaPods (`ios/Pods` keyed by
 
 ## Required secrets (names only)
 
-`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `GOOGLE_SERVICES_JSON_{DEV,STAGING,PROD}`, `GOOGLE_SERVICE_INFO_PLIST_{DEV,STAGING,PROD}`, `SENTRY_AUTH_TOKEN`, `IOS_CERTIFICATE_P12_BASE64`, `IOS_CERTIFICATE_PASSWORD`, `IOS_PROVISIONING_PROFILE_BASE64`, `OTA_SIGNING_PRIVATE_KEY`, `CLOUDFLARE_API_TOKEN`.
+`ci.yml` needs none beyond the default `GITHUB_TOKEN` (used by the secrets scan). Signing material, Firebase configs and OTA keys stay on the release manager's machine while releases are manual.
