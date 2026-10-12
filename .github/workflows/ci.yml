@@ -49,6 +49,11 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          # The action's default package list includes the retired 'tools' package; name what the build needs.
+          packages: platforms;android-37.0 build-tools;37.0.0 platform-tools
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
       - uses: gradle/actions/setup-gradle@v4
       - run: pnpm install --frozen-lockfile
       - run: cd android && ./gradlew assembleDevDebug --no-daemon
@@ -70,16 +75,16 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
       - run: pnpm install --frozen-lockfile
       - name: Pods cache
         uses: actions/cache@v4
         with:
           path: ios/Pods
           key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock', 'pnpm-lock.yaml') }}
-      - run: cd ios && bundle exec pod install
+      # macOS runners ship CocoaPods; we do not use Bundler (same as local development with Homebrew CocoaPods).
+      - run: cd ios && pod install
+        env:
+          LANG: en_US.UTF-8
       - run: |
           xcodebuild -workspace ios/Lagnaa.xcworkspace -scheme Lagnaa-Dev -configuration Debug-Dev \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \

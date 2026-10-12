@@ -14,7 +14,7 @@ Status: **foundation phase**. Architecture and tooling are in place; product scr
 ## Prerequisites (macOS)
 
 - Node 22.13+ (`.nvmrc`), pnpm 10 (`corepack enable && corepack prepare pnpm@latest --activate`)
-- Xcode 26.x with iOS 16+ simulators, CocoaPods
+- Xcode 26.x with iOS 16+ simulators, CocoaPods (`brew install cocoapods`; Bundler is not used)
 - Android Studio with SDK Platform 37, Build-Tools 37.0.0, NDK 27.1.12297006, an emulator (API 34 recommended for Maestro)
 - JDK 17+ (`JAVA_HOME`, Android Studio's bundled JBR works), `ANDROID_HOME`
 - Watchman (recommended), Maestro CLI (E2E)
