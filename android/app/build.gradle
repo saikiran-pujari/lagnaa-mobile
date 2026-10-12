@@ -1,0 +1,150 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+
+/**
+ * Environment files (public config) are selected per product flavor and exposed to JS by
+ * react-native-config. Keys are matched by flavor name prefix (dev|staging|prod) and build type.
+ */
+project.ext.envConfigFiles = [
+    devDebug: "env/.env.development",
+    devRelease: "env/.env.development",
+    stagingDebug: "env/.env.staging",
+    stagingRelease: "env/.env.staging",
+    prodDebug: "env/.env.production",
+    prodRelease: "env/.env.production",
+]
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+react {
+    /* Autolinking */
+    autolinkLibrariesWithApp()
+    // Flavors: debug variants skip JS bundling (Metro serves it).
+    debuggableVariants = ["devDebug", "stagingDebug", "prodDebug"]
+}
+
+/**
+ * Minify and shrink release builds. Mapping files are uploaded by the release workflow.
+ */
+def enableProguardInReleaseBuilds = true
+
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
+
+/**
+ * Release signing: prefer ANDROID_KEYSTORE_* environment variables (CI), fall back to a gitignored
+ * android/credentials.json ({ "storeFile": "...", "storePassword": "...", "keyAlias": "...", "keyPassword": "..." }).
+ * The upload key must be the one already registered with Play for in.lagnaa.app.
+ */
+def releaseSigning = [:]
+def credentialsFile = rootProject.file("credentials.json")
+if (System.getenv("ANDROID_KEYSTORE_PATH")) {
+    releaseSigning = [
+        storeFile: System.getenv("ANDROID_KEYSTORE_PATH"),
+        storePassword: System.getenv("ANDROID_KEYSTORE_PASSWORD"),
+        keyAlias: System.getenv("ANDROID_KEY_ALIAS"),
+        keyPassword: System.getenv("ANDROID_KEY_PASSWORD"),
+    ]
+} else if (credentialsFile.exists()) {
+    def parsed = new groovy.json.JsonSlurper().parse(credentialsFile)
+    releaseSigning = [
+        storeFile: rootProject.file(parsed.storeFile).absolutePath,
+        storePassword: parsed.storePassword,
+        keyAlias: parsed.keyAlias,
+        keyPassword: parsed.keyPassword,
+    ]
+}
+def hasReleaseSigning = releaseSigning.storeFile != null && new File(releaseSigning.storeFile.toString()).exists()
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    namespace "in.lagnaa.app"
+    defaultConfig {
+        applicationId "in.lagnaa.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        // versionCode continues from the Expo-era listing (last uploaded: 2). Bumped by scripts/sync-version.mjs.
+        versionCode 3
+        versionName "1.1.0"
+        resValue "string", "build_config_package", "in.lagnaa.app"
+    }
+
+    flavorDimensions = ["environment"]
+    productFlavors {
+        dev {
+            dimension "environment"
+            applicationIdSuffix ".dev"
+            resValue "string", "app_name", "Lagnaa Dev"
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
+        }
+        staging {
+            dimension "environment"
+            applicationIdSuffix ".staging"
+            resValue "string", "app_name", "Lagnaa Staging"
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
+        }
+        prod {
+            dimension "environment"
+            resValue "string", "app_name", "Lagnaa"
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseSigning.storeFile)
+                storePassword releaseSigning.storePassword
+                keyAlias releaseSigning.keyAlias
+                keyPassword releaseSigning.keyPassword
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // Unsigned (CI/local without credentials) or signed with the upload key. Never the debug key.
+            signingConfig hasReleaseSigning ? signingConfigs.release : null
+            minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+}
+
+dependencies {
+    implementation("com.facebook.react:react-android")
+
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation jscFlavor
+    }
+}
+
+/**
+ * Firebase: apply the google-services plugin only when at least one flavor ships a config file
+ * (android/app/src/<flavor>/google-services.json, gitignored). Debug builds work without it.
+ */
+def hasGoogleServices = fileTree(dir: "src", include: "*/google-services.json").files.size() > 0 || file("google-services.json").exists()
+if (hasGoogleServices) {
+    apply plugin: "com.google.gms.google-services"
+} else {
+    logger.lifecycle("lagnaa: no google-services.json found; Firebase push/realtime will report 'not configured'.")
+}

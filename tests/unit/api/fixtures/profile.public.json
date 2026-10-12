@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "data": {
+    "id": "7b1a0c3e-1111-4a2b-9c3d-000000000001",
+    "userId": "7b1a0c3e-2222-4a2b-9c3d-000000000002",
+    "firstName": "Anjali",
+    "lastName": "Sharma",
+    "age": 26,
+    "height": 164,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "education": "B.Tech",
+    "profession": "Software Engineer",
+    "profilePhoto": "https://bucket.example/profile-photo/7b1a0c3e-2222-4a2b-9c3d-000000000002/a.jpg?X-Amz-Signature=abc",
+    "photos": [],
+    "maritalStatus": "Never Married",
+    "subCaste": "Rajput",
+    "shortBio": "Hello",
+    "gender": "FEMALE",
+    "lastActive": "2026-10-11T10:00:00.000Z",
+    "activeToday": true,
+    "profileFor": "SELF",
+    "interestStatus": "PENDING"
+  }
+}

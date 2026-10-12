@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "profiles": [
+    {
+      "id": "7b1a0c3e-1111-4a2b-9c3d-000000000001",
+      "name": "Anjali Sharma",
+      "firstName": "Anjali",
+      "lastName": "Sharma",
+      "age": 26,
+      "gender": "FEMALE",
+      "height": 164,
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "education": "B.Tech",
+      "profession": "Software Engineer",
+      "profileImage": null,
+      "isPremium": false,
+      "lastActive": "2026-10-11T10:00:00.000Z",
+      "maritalStatus": "Never Married",
+      "compatibilityScore": 78,
+      "user": { "id": "7b1a0c3e-2222-4a2b-9c3d-000000000002", "isVerified": true }
+    }
+  ],
+  "pagination": { "limit": 20, "nextCursor": "eyJ4IjoxfQ", "hasMore": true }
+}

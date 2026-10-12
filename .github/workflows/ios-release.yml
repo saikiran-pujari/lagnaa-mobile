@@ -1,0 +1,46 @@
+name: iOS release (archive)
+
+# Enabled once an Apple Developer team and the App Store Connect record for in.lagnaa.app exist.
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  archive:
+    if: ${{ vars.IOS_RELEASE_ENABLED == 'true' }}
+    runs-on: macos-15
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: pnpm install --frozen-lockfile
+      - run: cd ios && bundle exec pod install
+      - name: Import signing
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      - name: Provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/lagnaa.mobileprovision
+      - name: Firebase config (prod)
+        if: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PROD != '' }}
+        run: echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PROD }}" | base64 -d > ios/Firebase/Prod/GoogleService-Info.plist
+      - name: Archive
+        run: |
+          xcodebuild -workspace ios/Lagnaa.xcworkspace -scheme Lagnaa -configuration Release-Prod \
+            -archivePath "$RUNNER_TEMP/Lagnaa.xcarchive" archive | xcpretty && exit ${PIPESTATUS[0]}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lagnaa-${{ github.ref_name }}-ios.xcarchive
+          path: ${{ runner.temp }}/Lagnaa.xcarchive
+      # Export + upload to App Store Connect is a manual step by a release manager.

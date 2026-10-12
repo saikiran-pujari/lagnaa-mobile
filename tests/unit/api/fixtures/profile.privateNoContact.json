@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": {
+    "id": "7b1a0c3e-1111-4a2b-9c3d-000000000001",
+    "userId": "7b1a0c3e-2222-4a2b-9c3d-000000000002",
+    "firstName": "Anjali",
+    "lastName": "Sharma",
+    "age": 26,
+    "photos": [],
+    "gender": "FEMALE",
+    "contactUnlocked": false,
+    "dateOfBirth": "2000-05-15T00:00:00.000Z",
+    "timeOfBirth": "06:30",
+    "annualIncome": "10-15 LPA",
+    "fatherName": "Ram",
+    "motherName": "Sita",
+    "visibility": "PUBLIC",
+    "interestStatus": "ACCEPTED",
+    "contactRequestStatus": "NONE",
+    "bio": "Full bio"
+  }
+}

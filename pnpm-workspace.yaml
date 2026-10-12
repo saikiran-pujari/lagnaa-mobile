@@ -1,0 +1,24 @@
+# pnpm project settings (pnpm 10+ reads these here, not from .npmrc).
+# React Native's Metro, autolinking and Gradle expect a flat node_modules: keep the hoisted linker.
+nodeLinker: hoisted
+autoInstallPeers: true
+strictPeerDependencies: false
+engineStrict: true
+# Packages whose postinstall scripts are allowed to run (everything else is blocked by default).
+allowBuilds:
+  esbuild: true
+  '@sentry/cli': true
+  '@firebase/util': true
+  protobufjs: true
+  sharp: true
+# Supply-chain guard: refuse packages published less than a day ago, except exact pins reviewed in
+# docs/TECH_STACK.md (remove an entry once its version is older than the cutoff).
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@tanstack/react-query@5.104.2'
+  - '@tanstack/query-core@5.104.2'
+  - '@tanstack/react-query-persist-client@5.104.2'
+  - '@tanstack/query-persist-client-core@5.104.2'
+  - '@tanstack/query-sync-storage-persister@5.104.2'
+  - 'zod@4.6.6'
+  - 'test-renderer@1.3.1'

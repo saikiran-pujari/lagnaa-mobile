@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "id": "7b1a0c3e-1111-4a2b-9c3d-000000000001",
+    "userId": "7b1a0c3e-2222-4a2b-9c3d-000000000002",
+    "firstName": "Anjali",
+    "lastName": "Sharma",
+    "age": 26,
+    "photos": ["profile-photos/7b1a0c3e-2222-4a2b-9c3d-000000000002/b.jpg"],
+    "gender": "FEMALE",
+    "contactUnlocked": true,
+    "email": "anjali@example.com",
+    "phone": "9876543210",
+    "isVerified": true,
+    "dateOfBirth": "2000-05-15T00:00:00.000Z",
+    "visibility": "PUBLIC",
+    "interestStatus": "ACCEPTED"
+  }
+}

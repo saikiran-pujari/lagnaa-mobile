@@ -1,0 +1,10 @@
+android/
+ios/
+node_modules/
+coverage/
+pnpm-lock.yaml
+skills/
+.claude/
+*.generated.ts
+docs/
+*.md

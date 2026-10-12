@@ -1,0 +1,16 @@
+# Maestro smoke flow: the app launches, the splash goes away, the welcome screen is visible.
+# Run: maestro test tests/e2e/smoke.yaml   (dev build installed on a simulator/emulator)
+appId: in.lagnaa.app.dev
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: welcome-screen
+    timeout: 15000
+- tapOn:
+    id: welcome-signin
+- assertVisible:
+    id: signin-screen
+- back
+- assertVisible:
+    id: welcome-screen
