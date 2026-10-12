@@ -32,6 +32,8 @@ lagnaa-mobile/
 │   ├── icons/                    # app icon source artwork
 │   └── images/
 ├── env/                          # .env.development / .env.staging / .env.production (public config)
+├── web/                          # developer preview of screens in a browser (Vite + react-native-web + shims);
+│                             #   a dev tool, NOT a client: excluded from lint/typecheck, never shipped
 ├── tests/
 │   ├── unit/                     # pure modules (api schemas, core, utils)
 │   ├── component/                # RNTL tests for design-system and feature components

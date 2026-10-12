@@ -34,11 +34,15 @@ function* walk(dir) {
 
 const hash = createHash('sha256');
 const pkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
+// Pure-JS packages that match the react-native-* naming but ship no native code.
+const JS_ONLY = new Set(['react-native-web']);
 const nativeDeps = Object.entries({ ...pkg.dependencies }).filter(
   ([n]) =>
-    /^(react-native|@react-native|@sentry\/react-native|@shopify\/flash-list|@react-navigation|lucide-react-native)/.test(
+    !JS_ONLY.has(n) &&
+    (/^(react-native|@react-native|@sentry\/react-native|@shopify\/flash-list|@react-navigation|lucide-react-native)/.test(
       n,
-    ) || /^react-native-/.test(n),
+    ) ||
+      /^react-native-/.test(n)),
 );
 hash.update(JSON.stringify(nativeDeps));
 for (const dir of ['android', 'ios']) {

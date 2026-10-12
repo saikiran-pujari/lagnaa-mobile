@@ -41,6 +41,14 @@ Staging and production variants: `pnpm android:staging`, `pnpm ios:staging`, `pn
 
 Notes: iOS simulator builds must be (ad-hoc) signed so the Keychain entitlements apply; `run-ios` does this, a bare `xcodebuild … CODE_SIGNING_ALLOWED=NO` produces an app whose Keychain calls fail. The brand fonts (Playfair Display, Inter) are referenced by the design tokens but not yet bundled; text falls back to system fonts until Phase 1 adds them under `assets/fonts` with `react-native.config.js`.
 
+## Screen preview in the browser (dev convenience)
+
+```bash
+pnpm web
+```
+
+Renders the app with `react-native-web` and shims for native modules (`web/shims`). It is for looking at screens quickly, not a supported client: native behaviour (keychain, MMKV, push, splash, gestures) is faked, and nothing in `web/` is linted, typechecked or released. The real web client lives in `lagnaa-client`.
+
 ## Quality
 
 ```bash
